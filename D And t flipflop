@@ -1,0 +1,59 @@
+module d_flipflop(
+    input D, CLK, RESET,
+    output reg Q
+);
+always @(posedge CLK or posedge RESET)
+begin
+    if(RESET)
+        Q <= 1'b0;
+    else
+        Q <= D;
+end
+endmodule
+module t_flipflop(
+    input T, CLK, RESET,
+    output reg Q
+);
+always @(posedge CLK or posedge RESET)
+begin
+    if(RESET)
+        Q <= 1'b0;
+    else if(T)
+        Q <= ~Q;
+    else
+        Q <= Q;
+end
+endmodule
+
+Testbench:
+module tb_flipflop;
+
+reg D, T, CLK, RESET;
+wire QD, QT;
+
+d_flipflop DFF(D, CLK, RESET, QD);
+t_flipflop TFF(T, CLK, RESET, QT);
+
+always #5 CLK = ~CLK;
+
+initial begin
+    $monitor("Time=%0t D=%b T=%b QD=%b QT=%b",
+              $time, D, T, QD, QT);
+
+    CLK=0;
+    RESET=1;
+    D=0;
+    T=0;
+
+    #10 RESET=0;
+
+    D=1; T=0; #10;
+    D=0; T=1; #10;
+    D=1; T=1; #10;
+    D=0; T=0; #10;
+    D=1; T=1; #10;
+
+    #10 $finish;
+end
+
+endmodule
