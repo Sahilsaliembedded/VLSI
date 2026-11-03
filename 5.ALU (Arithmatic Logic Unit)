@@ -1,0 +1,78 @@
+module alu4bit(
+    input [3:0] A, B,
+    input [3:0] SEL,
+    output reg [3:0] Y,
+    output reg CARRY
+);
+reg [4:0] TEMP;
+always @(*) begin
+  TEMP = 5'b00000;
+    Y = 4'b0000;
+    CARRY = 1'b0;
+    case(SEL)
+        4'b0000: begin
+            TEMP = A + B;
+            Y = TEMP[3:0];
+            CARRY = TEMP[4];
+        end
+        4'b0001: begin
+            Y = A - B;
+        end
+        4'b0010: Y = A & B;
+        4'b0011: Y = A | B;
+        4'b0100: Y = A ^ B;
+        4'b0101: Y = ~(A & B);
+        4'b0110: Y = ~(A | B);
+        4'b0111: Y = ~(A ^ B);
+        4'b1000: Y = ~A;
+        4'b1001: Y = ~B;
+        4'b1010: Y = A << 1;
+        4'b1011: Y = A >> 1;
+        4'b1100: Y = A + 1'b1;
+        4'b1101: Y = A - 1'b1;
+        4'b1110: Y = A;
+        4'b1111: Y = B;
+        default: Y = 4'b0000;
+    endcase
+end
+endmodule
+
+Testbench:
+
+module tb_alu4bit;
+
+reg [3:0] A, B, SEL;
+wire [3:0] Y;
+wire CARRY;
+
+alu4bit uut(A, B, SEL, Y, CARRY);
+
+initial begin
+
+    A = 4'b0101;
+    B = 4'b0011;
+
+    $monitor("Time=%0t A=%b B=%b SEL=%b Y=%b CARRY=%b",
+              $time, A, B, SEL, Y, CARRY);
+
+    SEL=4'b0000; #10;
+    SEL=4'b0001; #10;
+    SEL=4'b0010; #10;
+    SEL=4'b0011; #10;
+    SEL=4'b0100; #10;
+    SEL=4'b0101; #10;
+    SEL=4'b0110; #10;
+    SEL=4'b0111; #10;
+    SEL=4'b1000; #10;
+    SEL=4'b1001; #10;
+    SEL=4'b1010; #10;
+    SEL=4'b1011; #10;
+    SEL=4'b1100; #10;
+    SEL=4'b1101; #10;
+    SEL=4'b1110; #10;
+    SEL=4'b1111; #10;
+
+    $finish;
+end
+
+endmodule
