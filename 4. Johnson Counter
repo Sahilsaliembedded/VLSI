@@ -1,0 +1,42 @@
+module johnson_counter(
+    input CLK,
+    input RESET,
+    output reg [3:0] Q
+);
+
+always @(posedge CLK or posedge RESET)
+begin
+    if(RESET)
+        Q <= 4'b0000;
+    else
+        Q <= {Q[2:0], ~Q[3]};
+end
+
+endmodule
+
+Testbench:
+module tb_johnson_counter;
+
+reg CLK, RESET;
+wire [3:0] Q;
+
+johnson_counter uut(CLK, RESET, Q);
+
+always #5 CLK = ~CLK;
+
+initial begin
+    $monitor("Time=%0t RESET=%b Q=%b",
+              $time, RESET, Q);
+
+    CLK=0;
+    RESET=1;
+
+    #10 RESET=0;
+
+    #100 RESET=1;
+    #10 RESET=0;
+
+    #40 $finish;
+end
+
+endmodule
